@@ -18,7 +18,8 @@ const OggOpusDecoder = function( config, Module ){
     // bufferLength: 4096, // Define size of outgoing buffer
     decoderSampleRate: 48000, // Desired decoder sample rate.
     outputBufferSampleRate: 48000, // Desired output sample rate. Audio will be resampled
-    resampleQuality: 3, // Value between 0 and 10 inclusive. 10 being highest quality.
+    resampleQuality: 0, // Value between 0 and 10 inclusive. 10 being highest quality.
+    numberOfChannels: 1,
   }, config );
 
   // encode "raw" opus stream?
@@ -63,6 +64,7 @@ const OggOpusDecoder = function( config, Module ){
 
 OggOpusDecoder.prototype.decode = function( typedArray, onDecoded, userData ) {
   onDecoded = onDecoded || this.handleDecoded;
+  var typedArray = new Uint8Array( typedArray );
   var dataView = new DataView( typedArray.buffer );
   this.getPageBoundaries( dataView ).map( function( pageStart ) {
     var headerType = dataView.getUint8( pageStart + 5, true );
@@ -109,6 +111,7 @@ OggOpusDecoder.prototype.decode = function( typedArray, onDecoded, userData ) {
 OggOpusDecoder.prototype.decodeRaw = function( typedArray, onDecoded, userData ) {
 
   onDecoded = onDecoded || this.handleDecoded;
+  var typedArray = new Uint8Array( typedArray );
   var dataLength = typedArray.length * typedArray.BYTES_PER_ELEMENT;
   if(dataLength === 0){
     return;
