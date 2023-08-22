@@ -14,9 +14,11 @@ const OggOpusEncoder = function( config, Module ){
     encoderSampleRate: 48000, // Desired encoding sample rate. Audio will be resampled
     maxFramesPerPage: 40, // Tradeoff latency with overhead
     numberOfChannels: 1,
-    originalSampleRate: 44100,
-    resampleQuality: 3, // Value between 0 and 10 inclusive. 10 being highest quality.
-    serial: Math.floor(Math.random() * 4294967296)
+    // originalSampleRate: 44100,
+    resampleQuality: 10, // Value between 0 and 10 inclusive. 10 being highest quality.
+    serial: Math.floor(Math.random() * 4294967296),
+    rawOpus: true,
+    encoderBitRate: 50000
   }, config );
 
   // encode "raw" opus stream?
@@ -82,6 +84,7 @@ OggOpusEncoder.prototype.encode = function( buffers ) {
   var samples = this.interleave( buffers );
   var sampleIndex = 0;
   var exportPages = useOgg? [] : null;
+  var encodedData = useOgg? null : [];
   var bufferLength = this.resampler? this.resampleBufferLength : this.encoderBufferLength;
   var buffer = this.resampler? this.resampleBuffer : this.encoderBuffer;
 
@@ -107,14 +110,15 @@ OggOpusEncoder.prototype.encode = function( buffers ) {
           exportPages.push( this.generatePage() );
         }
       } else {
-        this.encodedData.push( new Uint8Array(this.encoderOutputBuffer.subarray(0, packetLength)) );
+        
+        encodedData.push( { message: 'page', page: new Uint8Array(this.encoderOutputBuffer.subarray(0, packetLength)) });
         this.encodedDataLength += packetLength;
       }
       this.sampleBufferIndex = 0;
     }
   }
 
-  return exportPages;
+  return useOgg ? exportPages : encodedData;
 };
 
 OggOpusEncoder.prototype.destroy = function() {

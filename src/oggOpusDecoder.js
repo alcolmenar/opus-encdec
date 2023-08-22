@@ -1,5 +1,5 @@
 
-var OggOpusDecoder = function( config, Module ){
+const OggOpusDecoder = function( config, Module ){
 
   if ( !Module ) {
     throw new Error('Module with exports required to initialize a decoder instance');
@@ -340,9 +340,3 @@ OggOpusDecoder.prototype.destroy = function() {
   this.destroyResampler();
   this.decodedBuffers = null;
 };
-
-if(typeof exports !== 'undefined'){
-  exports.OggOpusDecoder = OggOpusDecoder;
-} else if(typeof module === 'object' && module && module.exports){
-  module.exports.OggOpusDecoder = OggOpusDecoder;
-}

@@ -43,10 +43,11 @@ class EncoderWorklet extends AudioWorkletProcessor {
     };
   }
 
-  process(inputs) {
+  process(inputs, outputs) {
     if (this.encoder && inputs[0] && inputs[0].length && inputs[0][0] && inputs[0][0].length) {
       this.encoder.encode(inputs[0]).forEach((pageData) => this.postPage(pageData));
     }
+    
     return this.continueProcess;
   }
 
