@@ -1,5 +1,6 @@
+"use strict";
 
-var OggOpusEncoder = function( config, Module ){
+const OggOpusEncoder = function( config, Module ){
 
   if ( !Module ) {
     throw new Error('Module with exports required to initialize an encoder instance');
@@ -367,9 +368,3 @@ OggOpusEncoder.prototype.segmentPacket = function( packetLength ) {
 
   return exportPages;
 };
-
-if(typeof exports !== 'undefined'){
-  exports.OggOpusEncoder = OggOpusEncoder;
-} else if(typeof module === 'object' && module && module.exports){
-  module.exports.OggOpusEncoder = OggOpusEncoder;
-}
