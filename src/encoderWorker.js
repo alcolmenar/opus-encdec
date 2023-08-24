@@ -2,12 +2,21 @@ class EncoderWorklet extends AudioWorkletProcessor {
   constructor() {
     super();
     this.continueProcess = true;
+    this.continueEncode = false;
     this.port.onmessage = ({ data }) => {
       if (this.encoder) {
         switch (data.command) {
           case 'getHeaderPages':
             this.postPage(this.encoder.generateIdPage());
             this.postPage(this.encoder.generateCommentPage());
+            break;
+
+          case 'start':
+	    this.continueEncode = true;
+            break;
+
+          case 'stop':
+	    this.continueEncode = false;
             break;
 
           case 'done':
@@ -34,6 +43,7 @@ class EncoderWorklet extends AudioWorkletProcessor {
 
         case 'init':
           this.encoder = new OggOpusEncoder(data, Module);
+	  this.continueEncode = true;
           this.port.postMessage({ message: 'ready' });
           break;
 
@@ -44,7 +54,7 @@ class EncoderWorklet extends AudioWorkletProcessor {
   }
 
   process(inputs) {
-    if (this.encoder && inputs[0] && inputs[0].length && inputs[0][0] && inputs[0][0].length) {
+    if (this.continueEncode && this.encoder && inputs[0] && inputs[0].length && inputs[0][0] && inputs[0][0].length) {
       this.encoder.encode(inputs[0]).forEach((pageData) => this.postPage(pageData));
     }
     
